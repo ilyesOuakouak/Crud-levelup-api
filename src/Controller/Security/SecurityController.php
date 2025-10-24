@@ -15,18 +15,22 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\annotation\Route;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class SecurityController extends AbstractController
 {
     private JWTEncoderInterface $jwtEncoder;
     private UserRepository $userRepository;
     private ObjectNormalizer $normalizeObject;
+    private CacheInterface $cache;
 
-    public function __construct(JWTEncoderInterface $JWTEncoder, UserRepository $userRepository, ObjectNormalizer $normalizeObject)
+
+    public function __construct(JWTEncoderInterface $JWTEncoder, UserRepository $userRepository, ObjectNormalizer $normalizeObject, CacheInterface $cache)
     {
         $this->jwtEncoder = $JWTEncoder;
         $this->userRepository = $userRepository;
         $this->normalizeObject = $normalizeObject;
+        $this->cache = $cache;
     }
 
     #[Route('/auth/register', name: 'api_register', methods: ['POST'])]
@@ -66,6 +70,8 @@ class SecurityController extends AbstractController
 
         $entityManager->persist($user);
         $entityManager->flush();
+
+        $this->cache->delete('users_list');
 
 
         return new JsonResponse([
