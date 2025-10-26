@@ -16,10 +16,12 @@ class ObjectNormalizer
 
     public function getNormalizedObject($object, $status = null, array $groups = []): JsonResponse
     {
-        $context = new ObjectNormalizerContextBuilder()
+        /*$context = new ObjectNormalizerContextBuilder()
             ->withGroups($groups)
             ->toArray()
-        ;
+        ;*/
+
+        $context = ['groups' => $groups];
 
         return new JsonResponse([
             'normalizedObject' => $this->normalizer->normalize($object, 'array', $context),
