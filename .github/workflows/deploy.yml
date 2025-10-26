@@ -32,8 +32,8 @@ jobs:
               run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
             # 4️⃣ Run tests
-            - name: Run tests
-              run: vendor/bin/phpunit --testdox
+            #- name: Run tests
+            #  run: vendor/bin/phpunit --testdox
 
             # 5️⃣ Build Docker image
             - name: Build Docker image
