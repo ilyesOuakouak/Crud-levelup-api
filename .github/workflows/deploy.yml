@@ -35,6 +35,16 @@ jobs:
             #- name: Run tests
             #  run: vendor/bin/phpunit --testdox
 
+            # 🧩 Debug step — check if secret is loaded
+            - name: Debug Docker username
+              run: |
+                  if [ -z "${{ secrets.DOCKER_HUB_USERNAME }}" ]; then
+                    echo "❌ DOCKER_HUB_USERNAME secret is empty or missing!"
+                    exit 1
+                  else
+                    echo "✅ Docker username secret is set (value hidden for security)."
+                  fi
+
             # 5️⃣ Build Docker image
             - name: Build Docker image
               run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/symfony-app:latest .
