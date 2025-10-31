@@ -13,6 +13,12 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
+# Copy composer files first
+COPY composer.json composer.lock /var/www/html/
+
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
 # Copy project
 COPY . /var/www/html
 
