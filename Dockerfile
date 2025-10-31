@@ -1,9 +1,8 @@
 FROM php:8.4-fpm
 
-# Set working directory
 WORKDIR /var/www/html
 
-# Install system dependencies and PHP extensions
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     git unzip libicu-dev libzip-dev libpng-dev libjpeg-dev libfreetype6-dev libonig-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -15,20 +14,19 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
-# Copy composer files first (for caching)
+# Copy composer files first
 COPY composer.json composer.lock /var/www/html/
 
-# Allow Composer to run without interaction or memory issues
-ENV COMPOSER_ALLOW_SUPERUSER=1
-ENV COMPOSER_NO_INTERACTION=1
+# Install dependencies (no scripts yet to avoid bin/console error)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction -vvv
-
-# Copy project files
+# Copy the rest of the app
 COPY . /var/www/html
 
-# Ensure var directories exist and have correct permissions
+# Run post-install scripts now that bin/console exists
+RUN composer run-script post-install-cmd || true
+
+# Ensure cache/logs folder exist
 RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log && \
     chown -R www-data:www-data /var/www/html/var
 
