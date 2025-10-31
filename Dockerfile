@@ -16,8 +16,9 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 # Copy project
 COPY . /var/www/html
 
-# Set proper permissions for Symfony cache/logs
-RUN chown -R www-data:www-data /var/www/html/var
+# Ensure Symfony var folder exists before setting permissions
+RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log && \
+    chown -R www-data:www-data /var/www/html/var
 
 EXPOSE 9000
 CMD ["php-fpm"]
