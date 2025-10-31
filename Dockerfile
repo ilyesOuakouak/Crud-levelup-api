@@ -23,7 +23,7 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV COMPOSER_NO_INTERACTION=1
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction || cat /var/www/html/composer.log
+RUN composer install --no-dev --optimize-autoloader --no-interaction -vvv
 
 # Copy project files
 COPY . /var/www/html
